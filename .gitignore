@@ -1,0 +1,8 @@
+# python
+.python-version
+poetry.lock
+
+# temp
+dist
+__pycache__
+.pytest_cache
