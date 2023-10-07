@@ -18,18 +18,14 @@ This project was first meant to enable [Forta network of detection bots][forta-e
 
 ## Development
 
-Contributions welcome! Read the [contribution guidelines](CONTRIBUTING.md) first.
+Contributions welcome!
 
 ### TODO
 
 See [TODO](TODO.md).
 
-### Community
-
-See [CODE OF CONDUCT](CODE_OF_CONDUCT.md).
-
 ## License
 
-See [LICENSE](LICENSE).
+Licensed under the [aGPL v3](LICENSE).
 
 [forta-explorer]: https://explorer.forta.network/
