@@ -1,4 +1,6 @@
-"""Parse HEX input data for arrays of addresses and amounts
+"""Parse HEX input data.
+
+In particular, look for arrays of addresses and amounts.
 
 Address and value regex are designed to be exclusive.
 This avoids matching the address when searching for values and vice-versa.
@@ -90,6 +92,11 @@ def array_regex(length: int, element_regex: str) -> str:
     return '(' + _length_re + _elements_re + ')' # only capture the whole array as a group
 
 # PARSING #####################################################################
+
+@functools.lru_cache(maxsize=128)
+def get_function_selector(data: str) -> str:
+    """Extract the function selector from the input data."""
+    return data[2:10]
 
 @functools.lru_cache(maxsize=128)
 def get_array_length_candidates(data: str) -> list:

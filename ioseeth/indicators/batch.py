@@ -3,21 +3,21 @@
 import functools
 import itertools
 
-from forta_agent.transaction_event import TransactionEvent
 from web3 import Web3
 
-import src.parsing.balances as balances
-import src.parsing.events as events
-import src.parsing.inputs as inputs
-import src.parsing.selectors as selectors
+import ioseeth.indicators.wordlists as wordlists
+import ioseeth.parsing.balances as balances
+import ioseeth.parsing.events as events
+import ioseeth.parsing.inputs as inputs
+import ioseeth.parsing.abi as abi
 
 # SELECTORS INDICATORS ########################################################
 
 KNOWN_SIGNATURES = (
-    selectors.generate_signature_wordlist(pattern=selectors.PATTERNS[0], verbs=selectors.VERBS, adjectives=selectors.ADJECTIVES, tokens=selectors.TOKENS, nouns=selectors.NOUNS, args=selectors.ARGS)
-    + selectors.generate_signature_wordlist(pattern=selectors.PATTERNS[1], verbs=selectors.VERBS, adjectives=selectors.ADJECTIVES, tokens=selectors.TOKENS, nouns=selectors.NOUNS, args=selectors.ARGS))
+    wordlists.generate_signature_wordlist(pattern=wordlists.PATTERNS[0], verbs=wordlists.VERBS, adjectives=wordlists.ADJECTIVES, tokens=wordlists.TOKENS, nouns=wordlists.NOUNS, args=wordlists.ARGS)
+    + wordlists.generate_signature_wordlist(pattern=wordlists.PATTERNS[1], verbs=wordlists.VERBS, adjectives=wordlists.ADJECTIVES, tokens=wordlists.TOKENS, nouns=wordlists.NOUNS, args=wordlists.ARGS))
 
-KNOWN_SELECTORS = {selectors.selector(_s): _s for _s in KNOWN_SIGNATURES}
+KNOWN_SELECTORS = {abi.selector(_s): _s for _s in KNOWN_SIGNATURES}
 
 @functools.lru_cache(maxsize=128)
 def input_data_has_batching_selector(data: str, known: tuple=tuple(KNOWN_SELECTORS)) -> bool:

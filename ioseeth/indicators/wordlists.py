@@ -5,7 +5,6 @@ Ex:
 """
 
 import itertools
-import web3
 
 # DEFAULT ARGUMENTS ###########################################################
 
@@ -76,11 +75,4 @@ def generate_signature_wordlist(
         _signature = pattern.format(verb=_a[0], adjective=_a[1], token=_a[2], noun=_a[3], args=_a[-1])
         _signature = _signature[0].lower() + _signature[1:] # camel case
         _signatures.append(_signature)
-        #_signatures.append((web3.Web3.keccak(text=_signature).hex())[:10]) # 0x + first 4 bytes of the hash
     return _signatures
-
-# SELECTOR ####################################################################
-
-def selector(signature: str) -> str:
-    """Compute the web3 method selector for a single signature."""
-    return (web3.Web3.keccak(text=signature).hex().lower())[:10] # "0x" prefix + 4 bytes
