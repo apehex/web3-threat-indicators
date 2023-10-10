@@ -6,10 +6,10 @@ import itertools
 from web3 import Web3
 
 import ioseeth.indicators.wordlists as wordlists
+import ioseeth.parsing.abi as abi
 import ioseeth.parsing.balances as balances
 import ioseeth.parsing.events as events
 import ioseeth.parsing.inputs as inputs
-import ioseeth.parsing.abi as abi
 
 # SELECTORS INDICATORS ########################################################
 
@@ -17,7 +17,7 @@ KNOWN_SIGNATURES = (
     wordlists.generate_signature_wordlist(pattern=wordlists.PATTERNS[0], verbs=wordlists.VERBS, adjectives=wordlists.ADJECTIVES, tokens=wordlists.TOKENS, nouns=wordlists.NOUNS, args=wordlists.ARGS)
     + wordlists.generate_signature_wordlist(pattern=wordlists.PATTERNS[1], verbs=wordlists.VERBS, adjectives=wordlists.ADJECTIVES, tokens=wordlists.TOKENS, nouns=wordlists.NOUNS, args=wordlists.ARGS))
 
-KNOWN_SELECTORS = {abi.selector(_s): _s for _s in KNOWN_SIGNATURES}
+KNOWN_SELECTORS = {abi.calculate_selector(_s): _s for _s in KNOWN_SIGNATURES}
 
 @functools.lru_cache(maxsize=128)
 def input_data_has_batching_selector(data: str, known: tuple=tuple(KNOWN_SELECTORS)) -> bool:

@@ -9,6 +9,14 @@ import re
 
 # GENERIC #####################################################################
 
+@functools.lru_cache(maxsize=128)
+def is_raw_hex(bytecode: str) -> bool:
+    """Check whether the bytecode is a raw hexadecimal string or a sequence of opcodes."""
+    return not (
+        isinstance(bytecode, list)
+        or isinstance(bytecoden, tuple)
+        or (isinstance(bytecode, str) and ' ' in bytecode))
+
 # REGEX #######################################################################
 
 @functools.lru_cache(maxsize=128)

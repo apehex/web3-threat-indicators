@@ -9,12 +9,10 @@ import logging
 from eth_abi.abi import ABICodec
 from eth_utils.abi  import event_abi_to_log_topic
 from hexbytes import HexBytes
-from forta_agent.receipt import Log
-from forta_agent.transaction_event import TransactionEvent
 from web3._utils.abi import build_strict_registry
 from web3._utils.events import get_event_data
 from web3.exceptions import LogTopicError, MismatchedABI
-from web3.types import ABIEvent
+from web3.types import ABIEvent, LogReceipt
 
 # ABIs ########################################################################
 
@@ -57,7 +55,7 @@ def _generate_the_most_probable_abi_indexation_variants(abi: ABIEvent) -> dict:
     _indexed = tuple((_i * [True] + (_count - _i) * [False]) for _i in range(_count + 1)) # index from left to right, without gaps
     return {sum(_i): _apply_indexation_mask(abi=abi, mask=_i) for _i in _indexed} # order by number of indexed inputs
 
-def _compare_abi_to_log(abi: ABIEvent, log: Log) -> bool:
+def _compare_abi_to_log(abi: ABIEvent, log: LogReceipt) -> bool:
     """Returns True if abit and log match, False otherwise."""
     return (
         bool(log['topics'])

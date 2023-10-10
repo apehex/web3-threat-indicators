@@ -3,7 +3,7 @@
 import pytest
 import random
 
-import src.metrics._probabilities as probabilities
+import ioseeth.metrics.probabilities as probabilities
 import tests.test_data as data
 
 # FIXTURES ####################################################################

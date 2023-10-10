@@ -2,7 +2,8 @@
 
 import pytest
 
-import src.parsing.selectors as selectors
+import ioseeth.indicators.wordlists as wordlists
+import ioseeth.parsing.abi as abi
 import tests.test_data as data
 
 # FIXTURES ####################################################################
@@ -22,12 +23,12 @@ KNOWN_SELECTORS = [
 @pytest.fixture
 def signature_wordlist():
     return (
-        selectors.generate_signature_wordlist(pattern=selectors.PATTERNS[0])
-        + selectors.generate_signature_wordlist(pattern=selectors.PATTERNS[1]))
+        wordlists.generate_signature_wordlist(pattern=wordlists.PATTERNS[0])
+        + wordlists.generate_signature_wordlist(pattern=wordlists.PATTERNS[1]))
 
 @pytest.fixture
 def selector_wordlist(signature_wordlist):
-    return [selectors.selector(_s) for _s in signature_wordlist]
+    return [abi.calculate_selector(_s) for _s in signature_wordlist]
 
 # SIGNATURES ##################################################################
 

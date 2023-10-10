@@ -2,7 +2,7 @@
 
 import pytest
 
-import src.metrics._indicators as indicators
+import ioseeth.indicators.batch as indicators
 import tests.test_data as data
 
 # FIXTURES ####################################################################
