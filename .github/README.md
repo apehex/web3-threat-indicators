@@ -9,7 +9,7 @@ This project was first meant to enable [Forta network of detection bots][forta-e
 - [Usage](#usage)
 - [Development](#development)
   - [TODO](#todo)
-  - [Community](#community)
+- [Credits](#credits)
 - [License](#license)
 
 ## Installation
@@ -24,8 +24,13 @@ Contributions welcome!
 
 See [TODO](TODO.md).
 
+## Credits
+
+The metamorphic indicators were inspired by [a16z][github-a16z].
+
 ## License
 
 Licensed under the [aGPL v3](LICENSE).
 
+[github-a16z]: https://github.com/a16z/metamorphic-contract-detector/
 [forta-explorer]: https://explorer.forta.network/

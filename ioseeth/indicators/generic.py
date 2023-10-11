@@ -6,6 +6,20 @@ import ioseeth.parsing.abi
 import ioseeth.parsing.bytecode
 import ioseeth.parsing.inputs
 
+# OPCODES #####################################################################
+
+def bytecode_has_selfdestruct(bytecode: str) -> bool:
+    """Check if the runtime code contains the SELFDESTRUCT opcode"""
+    return ioseeth.parsing.bytecode.bytecode_has_specific_opcode(bytecode, ioseeth.parsing.bytecode.SELFDESTRUCT)
+
+def bytecode_has_create2(bytecode: str) -> bool:
+    """Check if the runtime code contains the CREATE2 opcode"""
+    return ioseeth.parsing.bytecode.bytecode_has_specific_opcode(bytecode, ioseeth.parsing.bytecode.CREATE2)
+
+def bytecode_has_delegatecall(bytecode: str) -> bool:
+    """Check if the runtime code contains the DELEGATECALL opcode"""
+    return ioseeth.parsing.bytecode.bytecode_has_specific_opcode(bytecode, ioseeth.parsing.bytecode.DELEGATECALL)
+
 # INTERFACES ##################################################################
 
 @functools.lru_cache(maxsize=128)
@@ -22,9 +36,3 @@ def bytecode_has_implementation_for_transaction_selector(bytecode: str, data: st
         not data
         or (len(data) < 6)
         or (ioseeth.parsing.inputs.get_function_selector(data=data) in ioseeth.parsing.bytecode.get_function_selectors(bytecode=bytecode)))
-
-# UNUSUAL CODING PATTERNS #####################################################
-
-@functools.lru_cache(maxsize=128)
-def bytecode_has_specific_opcodes(bytecode: str, opcodes: str, check: callable=any) -> bool:
-    return check(_o in bytecode for _o in opcodes)

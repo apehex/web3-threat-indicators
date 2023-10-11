@@ -13,3 +13,4 @@
 [ ] replace options with default values
 [ ] use modules in bots
 [ ] move interfaces in `token.py` to the ABI tests
+[ ] option to set the LRU cache size
