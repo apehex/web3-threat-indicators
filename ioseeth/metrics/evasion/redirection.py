@@ -7,7 +7,6 @@ import ioseeth.indicators.proxy
 import ioseeth.indicators.token
 import ioseeth.metrics.probabilities
 import ioseeth.metrics.normal.proxy
-import ioseeth.options
 
 # HIDDEN PROXY ################################################################
 

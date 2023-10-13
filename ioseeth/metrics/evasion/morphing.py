@@ -6,7 +6,6 @@ from web3 import Web3
 import ioseeth.indicators.generic
 import ioseeth.metrics.probabilities
 import ioseeth.parsing.bytecode
-import ioseeth.options
 
 # CONSTANTS ###################################################################
 

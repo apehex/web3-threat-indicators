@@ -5,7 +5,6 @@ from web3 import Web3
 
 import ioseeth.indicators.proxy
 import ioseeth.metrics.probabilities
-import ioseeth.options
 
 # PROXY #######################################################################
 

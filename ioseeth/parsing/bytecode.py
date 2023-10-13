@@ -7,15 +7,35 @@ https://blog.openzeppelin.com/deconstructing-a-solidity-contract-part-i-introduc
 import functools
 import re
 
+# OPCODES #####################################################################
+
+STOP = 0x00
+COINBASE = 0x41
+JUMPDEST = 0x5B
+PUSH1 = 0x60
+PUSH32 = 0x7F
+RETURN = 0xF3
+REVERT = 0xFD
+INVALID = 0xFE
+SELFDESTRUCT = 0xFF
+CREATE2 = 0xF5
+DELEGATECALL = 0xF4
+
+HALTING = [STOP, RETURN, REVERT, INVALID, SELFDESTRUCT]
+
+is_halting = lambda opcode: opcode in HALTING
+is_push = lambda opcode: opcode >= PUSH1 and opcode <= PUSH32
+
 # GENERIC #####################################################################
 
 @functools.lru_cache(maxsize=128)
 def is_raw_hex(bytecode: str) -> bool:
     """Check whether the bytecode is a raw hexadecimal string or a sequence of opcodes."""
-    return not (
-        isinstance(bytecode, list)
-        or isinstance(bytecoden, tuple)
-        or (isinstance(bytecode, str) and ' ' in bytecode))
+    try:
+        int(bytecode, 16)
+        return True
+    except Exception:
+        return False
 
 # REGEX #######################################################################
 
@@ -43,7 +63,7 @@ def storage_slot_regex(raw: bool=False) -> str:
 @functools.lru_cache(maxsize=128)
 def metadata_regex() -> str:
     """Regex matching the metadata appended to the bytecode."""
-    return r'(a264697066735822[0-9a-f]{68}64736f6c6343[0-9a-f]{6}0033)'
+    return r'(a264697066735822([0-9a-f]{68})64736f6c6343([0-9a-f]{6})0033)'
 
 # METADATA ####################################################################
 
@@ -61,45 +81,33 @@ def normalize(bytecode: str) -> str:
     __split = split_metadata(bytecode=bytecode)
     return __split[0].lower().replace('0x', '')
 
-# OPCODES #####################################################################
+# INSTRUCTIONS ################################################################
 
-STOP = 0x00
-COINBASE = 0x41
-JUMPDEST = 0x5B
-PUSH1 = 0x60
-PUSH32 = 0x7F
-RETURN = 0xF3
-REVERT = 0xFD
-INVALID = 0xFE
-SELFDESTRUCT = 0xFF
-CREATE2 = 0xF5
-DELEGATECALL = 0xF4
-
-HALTING = [STOP, RETURN, REVERT, INVALID, SELFDESTRUCT]
-
-is_halting = lambda opcode: opcode in HALTING
-is_push = lambda opcode: opcode >= PUSH1 and opcode <= PUSH32
+def iterate_over_instructions(bytecode: str) -> iter:
+    """Split the bytecode into raw instructions and returns an iterator."""
+    __bytes = bytes.fromhex(normalize(bytecode))
+    __i = 0
+    while __i < len(__bytes):
+        __len = 1 # instruction length in bytes
+        if is_push(__bytes[__i]): # instruction = push opcode + data
+            __len = __bytes[__i] - PUSH1 + 2
+        yield __bytes[__i:__i+__len]
+        __i = __i + __len
 
 @functools.lru_cache(maxsize=128)
 def bytecode_has_specific_opcode(bytecode: str, opcode: int) -> bool:
     """Check if the runtime code contains a specific opcode."""
-    __bytes = bytes.fromhex(normalize(bytecode))
+    __instructions = iterate_over_instructions(bytecode=bytecode)
     __halted = False
-    __skip = 0
 
-    for __oc in __bytes:
-        if __skip > 0: # skip the data bytes
-            __skip -= 1
-            continue
-        else:
-            if __oc == opcode and not __halted:
-                return True
-            elif __oc == JUMPDEST:
-                __halted = False
-            elif is_halting(__oc):
-                __halted = True
-            elif is_push(__oc):
-                __skip = __oc - PUSH1 + 1 # length of data
+    for __i in __instructions:
+        __oc = __i[0] # the opcode at the start of the instruction
+        if __oc == opcode and not __halted:
+            return True
+        elif __oc == JUMPDEST:
+            __halted = False
+        elif is_halting(__oc):
+            __halted = True
 
     return False
 

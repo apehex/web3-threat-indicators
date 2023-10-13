@@ -5,17 +5,17 @@ from web3 import Web3
 
 import ioseeth.indicators.batch
 import ioseeth.metrics.probabilities
-import ioseeth.options
 
 # CONFIDENCE ##################################################################
 
 def confidence_score(
     log: TransactionEvent,
     w3: Web3,
-    min_transfer_count: int=ioseeth.options.MIN_TRANSFER_COUNT,
-    min_transfer_total_erc20: int=ioseeth.options.MIN_TRANSFER_TOTAL_ERC20,
-    min_transfer_total_native: int=ioseeth.options.MIN_TRANSFER_TOTAL_NATIVE,
-    max_batching_fee: int=ioseeth.options.MAX_BATCHING_FEE[1]
+    min_transfer_count: int=8,
+    min_transfer_total_erc20: int=0,
+    min_transfer_total_native: int=10**18,
+    max_batching_fee: int=2*10**17,
+    **kwargs
 ) -> float:
     """Evaluate the probability that multiple transfers were bundled in a transaction."""
     _scores = []
@@ -44,8 +44,8 @@ def confidence_score(
 def malicious_score(
     log: TransactionEvent,
     w3: Web3,
-    min_transfer_count: int=ioseeth.options.MIN_TRANSFER_COUNT,
-    max_batching_fee: int=ioseeth.options.MAX_BATCHING_FEE[1]
+    min_transfer_count: int=8,
+    max_batching_fee: int=2*10**17
 ) -> float:
     """Evaluate the provabability that a batch transaction is malicious."""
     _scores = []

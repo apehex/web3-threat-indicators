@@ -5,7 +5,6 @@ from web3 import Web3
 
 import ioseeth.indicators.batch
 import ioseeth.metrics.probabilities
-import ioseeth.options
 
 # CONFIDENCE ##################################################################
 
@@ -14,8 +13,9 @@ import ioseeth.options
 def confidence_score(
     log: TransactionEvent,
     w3: Web3,
-    min_transfer_count: int=ioseeth.options.MIN_TRANSFER_COUNT,
-    min_transfer_total: int=ioseeth.options.MIN_TRANSFER_TOTAL_ERC20
+    min_transfer_count: int=8,
+    min_transfer_total: int=0,
+    **kwargs
 ) -> float:
     """Evaluate the probability that a transaction handled ERC20 tokens."""
     _scores = []
