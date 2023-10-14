@@ -1,7 +1,5 @@
 """Generic indicators for smart contracts."""
 
-import functools
-
 import ioseeth.parsing.abi
 import ioseeth.parsing.bytecode
 import ioseeth.parsing.inputs
@@ -22,15 +20,13 @@ def bytecode_has_delegatecall(bytecode: str) -> bool:
 
 # INTERFACES ##################################################################
 
-@functools.lru_cache(maxsize=128)
-def bytecode_has_specific_interface(bytecode: str, abi: dict, threshold: float=0.8, raw: bool=False) -> bool:
+def bytecode_has_specific_interface(bytecode: str, abi: tuple, threshold: float=0.8, raw: bool=False) -> bool:
     __selectors = ioseeth.parsing.bytecode.get_function_selectors(bytecode=bytecode, raw=raw)
-    __interface = tuple(abi.calculate_all_selectors(abi=abi, target='function').values())
+    __interface = tuple(ioseeth.parsing.abi.calculate_all_selectors(abi=abi, target='function').values())
     return (sum(__s in __interface for __s in __selectors) / len(__interface)) >= threshold # only requires to have threshold % of the interface
 
 # CONFLICTS ###################################################################
 
-@functools.lru_cache(maxsize=128)
 def bytecode_has_implementation_for_transaction_selector(bytecode: str, data: str) -> bool:
     return (
         not data

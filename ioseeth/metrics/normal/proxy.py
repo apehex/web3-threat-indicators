@@ -1,6 +1,5 @@
 """Evaluate the probability that multiple transfers were bundled in a transaction."""
 
-from forta_agent.transaction_event import TransactionEvent
 from web3 import Web3
 
 import ioseeth.indicators.proxy

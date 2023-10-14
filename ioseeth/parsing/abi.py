@@ -5,7 +5,7 @@ import os.path
 
 import eth_utils
 
-import ioseeth.__utils as __utils
+import ioseeth.utils
 
 # SIGNATURE ###################################################################
 
@@ -23,12 +23,12 @@ def calculate_selector(signature: str) -> str:
 
 # ABI #########################################################################
 
-def load(path: str) -> dict:
+def load(path: str) -> tuple:
     """Load an ABI from the references on disk."""
-    with open(os.path.join(__utils.get_data_dir_path(), path), 'r') as __f:
-        return json.load(__f)
+    with open(os.path.join(ioseeth.utils.get_data_dir_path(), 'abi/', path), 'r') as __f:
+        return tuple(json.load(__f))
 
-def calculate_all_selectors(abi: list, target: str='function') -> dict:
+def calculate_all_selectors(abi: tuple, target: str='function') -> dict:
     """Compute the selector of each function and returns a dictionary {signature => selector}."""
     __result = {}
     for __o in abi:
@@ -36,5 +36,5 @@ def calculate_all_selectors(abi: list, target: str='function') -> dict:
             __signature = format_signature(
                 name=__o.get('name', ''),
                 types=(__a.get('type', '') for __a in __o.get('inputs', [])))
-            __result[__signature] = selector(signature=__signature)
+            __result[__signature] = calculate_selector(signature=__signature)
     return __result

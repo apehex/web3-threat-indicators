@@ -1,6 +1,5 @@
 """Indicators on proxy contracts."""
 
-import functools
 import web3
 
 import ioseeth.parsing.bytecode
@@ -42,23 +41,19 @@ INTERFACES = {
 #TODO improve bytecode disassembly: wrong opcode
 #TODO delegatecall opcode appears after disassembly when it's not used in original sources...
 
-@functools.lru_cache(maxsize=128)
 def bytecode_redirects_execution(bytecode: str, opcodes: tuple=DELEGATE_OPCODES) -> bool:
     return any(_o in bytecode for _o in opcodes)
 
 # STANDARDS ###################################################################
 
-@functools.lru_cache(maxsize=128)
 def bytecode_uses_standard_proxy_slots(bytecode: str, standards: dict=LOGIC_SLOTS) -> bool:
     return any(_slot in bytecode for _slot in standards.values())
 
-@functools.lru_cache(maxsize=128)
 def bytecode_has_proxy_slots_from_several_standards(bytecode: str, standards: dict=LOGIC_SLOTS) -> bool:
     return sum(_slot in bytecode for _slot in standards.values()) > 1
 
 # LOGIC CONTRACT ##############################################################
 
-@functools.lru_cache(maxsize=128)
 def storage_logic_addresses(w3: web3.Web3, address: str, bytecode: str, standards: dict=LOGIC_SLOTS) -> bool:
     _slots = ioseeth.parsing.bytecode.get_storage_slots(bytecode=bytecode)
     _values = (w3.eth.get_storage_at(address, _s) for _s in standards.values() if _s in _slots)

@@ -1,7 +1,6 @@
 """Filter the logs for relevant ERC20 / ERC721 events."""
 
 import copy
-import functools
 import itertools
 import json
 import logging
@@ -28,7 +27,6 @@ def _get_input_names(abi: ABIEvent) -> tuple:
     """Extract the name of each input of an event, from its ABI."""
     return tuple(_a.get('name', '') for _a in abi.get('inputs', []))
 
-@functools.lru_cache(maxsize=128)
 def _abi_codec() -> ABICodec:
     """Wrapper around the registry for encoding & decoding ABIs."""
     return ABICodec(build_strict_registry())
@@ -63,17 +61,14 @@ def _compare_abi_to_log(abi: ABIEvent, log: LogReceipt) -> bool:
 
 # FORMAT ######################################################################
 
-@functools.lru_cache(maxsize=128)
 def _get_arg_value(event: 'AttributeDict', name: str) -> str:
-    """Extract the value of an event input from its log.""" 
+    """Extract the value of an event input from its log."""
     return str(event.get('args', {}).get(name, ''))
 
-@functools.lru_cache(maxsize=128)
 def _get_token_address(event: 'AttributeDict') -> str:
     """Extract the address of the token that emitted the event."""
     return str((event.get('address', '')))
 
-@functools.lru_cache(maxsize=128)
 def _parse_event(event: 'AttributeDict', names: tuple) -> dict:
     """Extract the relevant data from a log and format it."""
     return {
@@ -88,7 +83,6 @@ def get_event_data_factory(abi: ABIEvent, codec: ABICodec) -> list:
     """Adapt the parsing logic to a given event."""
     _abi_variants = _generate_the_most_probable_abi_indexation_variants(abi=abi)
 
-    @functools.lru_cache(maxsize=128)
     def _get_event_data(logs: tuple) -> list:
         """Extract event data from the hex log topics."""
         _results = []
@@ -107,7 +101,6 @@ def parse_logs_factory(abi: ABIEvent=ERC20_TRANSFER_EVENT, codec: ABICodec=_abi_
     _inputs = _get_input_names(abi)
     _get_event_data = get_event_data_factory(abi=abi, codec=codec)
 
-    @functools.lru_cache(maxsize=128)
     def _parse_logs(logs: tuple) -> tuple:
         """Extract all the event matching a given ABI."""
         _events = _get_event_data(logs=logs)

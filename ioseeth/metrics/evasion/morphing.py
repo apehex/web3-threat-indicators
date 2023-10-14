@@ -1,6 +1,5 @@
 """Evaluate the probability that multiple transfers were bundled in a transaction."""
 
-from forta_agent.transaction_event import TransactionEvent
 from web3 import Web3
 
 import ioseeth.indicators.generic
@@ -9,9 +8,9 @@ import ioseeth.parsing.bytecode
 
 # CONSTANTS ###################################################################
 
-UNUSUAL_OPCODES = ('BLOCKHASH', 'DIFFICULTY')
+UNUSUAL_OPCODES = (ioseeth.parsing.bytecode.BLOCKHASH,)
 
-RED_PILL_OPCODES = ('COINBASE',)
+RED_PILL_OPCODES = (ioseeth.parsing.bytecode.COINBASE,)
 
 # RED PILL ####################################################################
 
