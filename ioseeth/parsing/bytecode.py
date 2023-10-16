@@ -104,7 +104,7 @@ def bytecode_has_specific_opcode(bytecode: str, opcode: int) -> bool:
 
     return False
 
-def bytecode_has_specific_opcodes(bytecode: str, opcodes: int, check: callable=any) -> bool:
+def bytecode_has_specific_opcodes(bytecode: str, opcodes: tuple, check: callable=any) -> bool:
     """Check if the runtime code contains any/all of the specified opcodes."""
     return check(bytecode_has_specific_opcode(bytecode=bytecode, opcode=__o) for __o in opcodes)
 

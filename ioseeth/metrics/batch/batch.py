@@ -44,7 +44,8 @@ def malicious_score(
     log: TransactionEvent,
     w3: Web3,
     min_transfer_count: int=8,
-    max_batching_fee: int=2*10**17
+    max_batching_fee: int=2*10**17,
+    **kwargs
 ) -> float:
     """Evaluate the provabability that a batch transaction is malicious."""
     _scores = []

@@ -26,7 +26,8 @@ import ioseeth.metrics.normal.proxy
 
 def is_hidden_proxy(
     data: str,
-    bytecode: str
+    bytecode: str,
+    **kwargs
 ) -> float:
     """Evaluate that a contract is redirecting execution."""
     __scores = []

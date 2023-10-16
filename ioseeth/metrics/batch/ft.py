@@ -30,7 +30,11 @@ def confidence_score(
 
 # TODO: the ERC20 balance of the contract increased
 
-def malicious_score(log: TransactionEvent, w3: Web3) -> float:
+def malicious_score(
+    log: TransactionEvent,
+    w3: Web3,
+    **kwargs
+) -> float:
     """Evaluate the provabability that an ERC20 transaction is malicious."""
     _scores = []
     _logs = tuple(log.logs)

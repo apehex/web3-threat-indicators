@@ -39,7 +39,11 @@ def confidence_score(
 # TODO: new contract / new token
 # TODO: contract pretends to be a known token (ex: Tether USDT)
 
-def malicious_score(log: TransactionEvent, w3: Web3) -> float:
+def malicious_score(
+    log: TransactionEvent,
+    w3: Web3,
+    **kwargs
+) -> float:
     """Evaluate the provabability that an airdrop is malicious."""
     _scores = []
     return ioseeth.metrics.probabilities.conflation(_scores)

@@ -25,7 +25,11 @@ def confidence_score(
 
 # MALICIOUS ###################################################################
 
-def malicious_score(log: TransactionEvent, w3: Web3) -> float:
+def malicious_score(
+    log: TransactionEvent,
+    w3: Web3,
+    **kwargs
+) -> float:
     """Evaluate the provabability that a NFT transaction is malicious."""
     _scores = []
     return ioseeth.metrics.probabilities.conflation(_scores)

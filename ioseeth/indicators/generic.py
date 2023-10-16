@@ -4,6 +4,12 @@ import ioseeth.parsing.abi
 import ioseeth.parsing.bytecode
 import ioseeth.parsing.inputs
 
+# META ########################################################################
+
+def transaction_is_contract_creation(recipient: str) -> bool:
+    """Check whether the transaction created a new contract at the target address."""
+    return not recipient
+
 # OPCODES #####################################################################
 
 def bytecode_has_selfdestruct(bytecode: str) -> bool:
