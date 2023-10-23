@@ -17,3 +17,4 @@
 [ ] option to set the LRU cache size
 [ ] indexing:
     [ ] use cryo to cache all the data
+[ ] test on cryo data

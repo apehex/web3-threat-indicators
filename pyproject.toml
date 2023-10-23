@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ioseeth"
-version = "0.1.7"
+version = "0.1.8"
 description = "Utilities to parse blockchain data and look for threat indicators"
 authors = ["apehex <apehex@protonmail.com>"]
 readme = ".github/README.md"
