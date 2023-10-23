@@ -1,12 +1,12 @@
 [tool.poetry]
 name = "ioseeth"
-version = "0.1.8"
+version = "0.1.9"
 description = "Utilities to parse blockchain data and look for threat indicators"
 authors = ["apehex <apehex@protonmail.com>"]
 readme = ".github/README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = ">=3.9"
 web3 = "*"
 
 [tool.poetry.dev-dependencies]
