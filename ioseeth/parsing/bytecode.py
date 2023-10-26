@@ -10,6 +10,7 @@ import re
 
 STOP = 0x00
 EQ = 0x14
+EXTCODECOPY = 0x3C
 BLOCKHASH = 0x40
 COINBASE = 0x41
 JUMPDEST = 0x5B
@@ -94,7 +95,13 @@ def split_metadata(bytecode: str) -> list:
 def parse_creation_data(data: str) -> tuple:
     """Split the creation data into 4 parts: creation bytecode + runtime bytecode + metadata + creation args."""
     __creation = __runtime = __metadata = __args = ''
-    __creation, __rest = split_creation(bytecode=data)
+    __rest = data
+    # extract the creation code
+    __parts = split_creation(bytecode=data)
+    if len(__parts) > 1 and __parts[1]:
+        __creation = __parts[0]
+        __rest = __parts[1]
+    # parse the runtime, metadata and args from the rest of the creation data
     __parts = split_metadata(bytecode=__rest)
     if __parts:
         __runtime = __parts[0]
