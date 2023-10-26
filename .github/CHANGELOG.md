@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.11
+
+### Changes
+
+- add `0` padding to the left of HEX bytecode when normalizing so that it has a pair length => full bytes
+
 ## v0.1.10
 
 ### Fixes

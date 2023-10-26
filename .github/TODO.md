@@ -23,6 +23,8 @@
     [ ] when a trace is identified, also label the sibling traces & related entities:
         [ ] mutant deployment => implementation deployment + factory.getImplementation
         [ ] factory deployment => deployer
+    [ ] new init code: return implementation code from the factory => instead of calling `getImplementation()`, the init code directly calls `getBytecode`
+    [ ] selector wordlist?
 [ ] red pill contracts
 [ ] event poisoning
 [ ] scan ALL the data:

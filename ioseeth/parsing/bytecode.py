@@ -44,7 +44,9 @@ def is_raw_hex(bytecode: str) -> bool:
 
 def normalize(bytecode: str) -> str:
     """Format the hex bytecode in a known and consistent way."""
-    return bytecode.lower().replace('0x', '')
+    return (
+        ((len(bytecode) % 2) * '0') # pad so that the length is pair => full bytes
+        + bytecode.lower().replace('0x', ''))
 
 # REGEX #######################################################################
 
