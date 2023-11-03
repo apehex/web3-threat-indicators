@@ -3,9 +3,14 @@
 import json
 import os.path
 
-import eth_utils
-
 import ioseeth.utils
+
+# DATA ########################################################################
+
+def load(path: str) -> tuple:
+    """Load an ABI from the references on disk."""
+    with open(os.path.join(ioseeth.utils.get_data_dir_path(), 'abi/', path), 'r') as __f:
+        return tuple(json.load(__f))
 
 # SIGNATURE ###################################################################
 
@@ -15,26 +20,40 @@ def format_signature(name: str, types: tuple) -> str:
         name=name,
         arguments=','.join(types))
 
+def calculate_signature(abi: dict) -> str:
+    """Compose a function / event / error signature from its ABI."""
+    return format_signature(
+        name=abi.get('name', ''),
+        types=(__input.get('type', '') for __input in abi.get('inputs', [])))
+
+def calculate_hash(abi: dict) -> str:
+    """Compose a function / event / error hash from its ABI."""
+    return ioseeth.utils.keccak(text=calculate_signature(abi=abi))
+
 # HASH ########################################################################
 
 def calculate_selector(signature: str) -> str:
-    """Compute the method selector for a single signature."""
-    return (eth_utils.crypto.keccak(text=signature).hex().lower())[:8] # "0x" prefix + 4 bytes
+    """Compute the selector for a single signature."""
+    return (ioseeth.utils.keccak(text=signature.replace(' ', '')))[:8] # 4 bytes without prefix
 
 # ABI #########################################################################
 
-def load(path: str) -> tuple:
-    """Load an ABI from the references on disk."""
-    with open(os.path.join(ioseeth.utils.get_data_dir_path(), 'abi/', path), 'r') as __f:
-        return tuple(json.load(__f))
-
-def calculate_all_selectors(abi: tuple, target: str='function') -> dict:
-    """Compute the selector of each function and returns a dictionary {signature => selector}."""
+def map_hashes_to_abis(abi: tuple, target: str='function') -> dict:
+    """Compute the hash of each element in the ABI and returns a dictionary {hash => ABI}."""
     __result = {}
-    for __o in abi:
-        if __o.get('type', '') == target:
-            __signature = format_signature(
-                name=__o.get('name', ''),
-                types=(__a.get('type', '') for __a in __o.get('inputs', [])))
-            __result[__signature] = calculate_selector(signature=__signature)
+    for __abi in abi:
+        if __abi.get('type', '') in target: # allows to specify several targets, like "event,error"
+            __hash = calculate_hash(abi=__abi)
+            __result[__hash] = __abi
     return __result
+
+def map_hashes_to_signatures(abi: tuple, target: str='function') -> dict:
+    """Compute the hash of each element in the ABI and returns a dictionary {hash => signature}."""
+    return {
+        __hash: calculate_signature(abi=__abi)
+        for __hash, __abi in map_hashes_to_abis(abi=abi, target=target).items()
+    }
+
+def map_selectors_to_signatures(abi: tuple, target: str='function') -> dict:
+    """Compute the selector of each element in the ABI and returns a dictionary {selector => signature}."""
+    return {__hash[:8]: __signature for __hash, __signature in map_hashes_to_signatures(abi=abi, target=target).items()}

@@ -25,8 +25,13 @@
         [ ] factory deployment => deployer
     [ ] new init code: return implementation code from the factory => instead of calling `getImplementation()`, the init code directly calls `getBytecode`
     [ ] selector wordlist?
-[ ] red pill contracts
+    [ ] `is_bytecode_metamorphic_init_code` => `HAS_bytecode_metamorphic_init_code`: equality vs inclusion => broader
 [ ] event poisoning
+    [x] erc-20
+    [ ] erc-721
+    [ ] erc-1155
+    [ ] erc-1967
+[ ] red pill contracts
 [ ] scan ALL the data:
     [ ] for example, the metamorphic init code can be in: the factory creation bytecode, the factory runtime bytecode, the mutation input data, yet another contract...
     [ ] the implementation address can be retrieved from the factory or another contract
@@ -38,3 +43,9 @@
 [ ] pickle dataset:
     [ ] metamorphic tx
     [ ] metamorphic traces
+[ ] modules:
+    [ ] indicators
+    [ ] metrics
+    [ ] parsing
+    [ ] scraping
+    [ ] utils

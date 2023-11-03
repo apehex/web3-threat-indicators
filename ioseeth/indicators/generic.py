@@ -3,6 +3,7 @@
 import ioseeth.parsing.abi
 import ioseeth.parsing.bytecode
 import ioseeth.parsing.inputs
+import ioseeth.utils
 
 # META ########################################################################
 
@@ -27,9 +28,10 @@ def bytecode_has_delegatecall(bytecode: str) -> bool:
 # INTERFACES ##################################################################
 
 def bytecode_has_specific_interface(bytecode: str, abi: tuple, threshold: float=0.8, raw: bool=False) -> bool:
+    """Check if the input bytecode implements a given ABI interface."""
     __selectors = ioseeth.parsing.bytecode.get_function_selectors(bytecode=bytecode, raw=raw)
-    __interface = tuple(ioseeth.parsing.abi.calculate_all_selectors(abi=abi, target='function').values())
-    return (sum(__s in __interface for __s in __selectors) / len(__interface)) >= threshold # only requires to have threshold % of the interface
+    __interface = tuple(ioseeth.parsing.abi.map_selectors_to_signatures(abi=abi, target='function').keys())
+    return ioseeth.utils.coverage(left=__selectors, right=__interface) >= threshold # only requires to have threshold % of the interface
 
 # CONFLICTS ###################################################################
 

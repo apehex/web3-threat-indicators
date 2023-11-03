@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ioseeth"
-version = "0.1.11"
+version = "0.1.12"
 description = "Utilities to parse blockchain data and look for threat indicators"
 authors = ["apehex <apehex@protonmail.com>"]
 readme = ".github/README.md"
@@ -9,8 +9,9 @@ readme = ".github/README.md"
 python = ">=3.9, <4"
 web3 = ">=5"
 
-[tool.poetry.dev-dependencies]
-pytest = "^7.4"
+[tool.poetry.group.dev.dependencies]
+pytest = ">=7"
+forta-agent = ">=0.1.25"
 
 [build-system]
 requires = ["poetry-core"]

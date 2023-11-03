@@ -1,16 +1,16 @@
 """Filter the logs for relevant ERC20 / ERC721 events."""
 
 import copy
+import functools
 import itertools
 import json
-import logging
 
-from eth_abi.abi import ABICodec
-from eth_utils.abi  import event_abi_to_log_topic
+import eth_abi.abi
+import eth_utils.abi
+import web3._utils.events
+
 from hexbytes import HexBytes
 from web3._utils.abi import build_strict_registry
-from web3._utils.events import get_event_data
-from web3.exceptions import LogTopicError, MismatchedABI
 from web3.types import ABIEvent, LogReceipt
 
 # ABIs ########################################################################
@@ -23,22 +23,22 @@ ERC721_APPROVAL_EVENT = ABIEvent(json.loads('{"name":"Approval","type":"event","
 ERC721_APPROVAL_FOR_ALL_EVENT = ABIEvent(json.loads('{"name":"ApprovalForAll","type":"event","anonymous":false,"inputs":[{"indexed":true,"name":"_owner","type":"address"},{"indexed":true,"name":"_operator","type":"address"},{"indexed":false,"name":"_approved","type":"bool"}]}'))
 ERC721_TRANSFER_EVENT = ABIEvent(json.loads('{"name":"Transfer","type":"event","anonymous":false,"inputs":[{"indexed":true,"name":"_from","type":"address"},{"indexed":true,"name":"_to","type":"address"},{"indexed":true,"name":"_tokenId","type":"uint256"}]}'))
 
-def _get_input_names(abi: ABIEvent) -> tuple:
+def _get_input_names(abi: dict) -> tuple:
     """Extract the name of each input of an event, from its ABI."""
     return tuple(_a.get('name', '') for _a in abi.get('inputs', []))
 
-def _abi_codec() -> ABICodec:
+def _abi_codec() -> eth_abi.abi.ABICodec:
     """Wrapper around the registry for encoding & decoding ABIs."""
-    return ABICodec(build_strict_registry())
+    return eth_abi.abi.ABICodec(build_strict_registry())
 
-def _apply_indexation_mask(abi: ABIEvent, mask: tuple) -> ABIEvent:
+def _apply_indexation_mask(abi: dict, mask: tuple) -> dict:
     """Change the "indexed" field of the ABI according to the mask."""
     _abi = copy.deepcopy(abi)
     for _i in range(len(mask)):
         _abi['inputs'][_i]['indexed'] = mask[_i]
     return _abi
 
-def _generate_all_abi_indexation_variants(abi: ABIEvent) -> dict:
+def _generate_all_abi_indexation_variants(abi: dict) -> dict:
     """Generate all the variants of the ABI by switching each "indexed" field true / false for the inputs."""
     _count = len(abi.get('inputs', ()))
     _indexed = tuple(itertools.product(*(_count * ((True, False), ))))
@@ -47,17 +47,17 @@ def _generate_all_abi_indexation_variants(abi: ABIEvent) -> dict:
         _abis[sum(_i)].append(_apply_indexation_mask(abi=abi, mask=_i))
     return _abis
 
-def _generate_the_most_probable_abi_indexation_variants(abi: ABIEvent) -> dict:
-    """Generate the most probable variant of the ABI for each count of indexed inputs."""
-    _count = len(abi.get('inputs', ()))
-    _indexed = tuple((_i * [True] + (_count - _i) * [False]) for _i in range(_count + 1)) # index from left to right, without gaps
-    return {sum(_i): _apply_indexation_mask(abi=abi, mask=_i) for _i in _indexed} # order by number of indexed inputs
+def _generate_the_most_probable_abi_indexation_variant(abi: dict, indexed: int) -> dict:
+    """Generate the most probable variant of the ABI for a given count of indexed inputs."""
+    __count = len(abi.get('inputs', ()))
+    __mask = indexed * (True,) + (__count - indexed) * (False,) # index from left to right, without gaps
+    return _apply_indexation_mask(abi=abi, mask=__mask)
 
-def _compare_abi_to_log(abi: ABIEvent, log: LogReceipt) -> bool:
+def _compare_abi_to_log(abi: dict, log: LogReceipt) -> bool:
     """Returns True if abit and log match, False otherwise."""
     return (
-        bool(log['topics'])
-        and event_abi_to_log_topic(abi) == log['topics'][0])
+        bool(getattr(log, 'topics', ()))
+        and eth_utils.abi.event_abi_to_log_topic(abi) == log['topics'][0]) # compare bytes
 
 # FORMAT ######################################################################
 
@@ -79,33 +79,32 @@ def _parse_event(event: 'AttributeDict', names: tuple) -> dict:
 
 # DECODE ######################################################################
 
-def get_event_data_factory(abi: ABIEvent, codec: ABICodec) -> list:
+def get_event_data(log: dict, abi: dict, codec: eth_abi.abi.ABICodec=_abi_codec()) -> dict:
+    """Extract event data from the hex log topics."""
+    __abi = _generate_the_most_probable_abi_indexation_variant(abi=abi, indexed=len(log.topics) - 1)
+    return web3._utils.events.get_event_data(codec, __abi, log)
+
+def parse_event_log(log: dict, abi: dict, codec: eth_abi.abi.ABICodec=_abi_codec()) -> dict:
+    """Extract and format the event data."""
+    __data = {}
+    if _compare_abi_to_log(abi=abi, log=log):
+        __inputs = _get_input_names(abi)
+        __event = get_event_data(log=log, abi=abi, codec=codec)
+        __data = {__name: _get_arg_value(event=__event, name=__name) for __name in __inputs}
+    return __data
+
+def parse_logs_factory(abi: dict=ERC20_TRANSFER_EVENT, codec: eth_abi.abi.ABICodec=_abi_codec()) -> callable:
     """Adapt the parsing logic to a given event."""
-    _abi_variants = _generate_the_most_probable_abi_indexation_variants(abi=abi)
-
-    def _get_event_data(logs: tuple) -> list:
-        """Extract event data from the hex log topics."""
-        _results = []
-        for _log in logs:
-            _log.topics = [HexBytes(_topic) for _topic in _log.topics]
-            if _compare_abi_to_log(abi=abi, log=_log): # avoid MismatchedABI exception
-                _abi = _abi_variants.get(len(_log['topics']) - 1, None) # avoid LogTopicError exception
-                if _abi:
-                    _results.append(get_event_data(codec, _abi, _log))
-        return _results
-
-    return _get_event_data
-
-def parse_logs_factory(abi: ABIEvent=ERC20_TRANSFER_EVENT, codec: ABICodec=_abi_codec()) -> callable:
-    """Adapt the parsing logic to a given event."""
-    _inputs = _get_input_names(abi)
-    _get_event_data = get_event_data_factory(abi=abi, codec=codec)
+    __inputs = _get_input_names(abi)
 
     def _parse_logs(logs: tuple) -> tuple:
         """Extract all the event matching a given ABI."""
-        _events = _get_event_data(logs=logs)
+        # normalize
+        for __log in logs: __log.topics = tuple(HexBytes(__topic) for __topic in __log.topics)
+        # parse
+        _events = (get_event_data(log=__log, abi=abi, codec=codec) for __log in logs if _compare_abi_to_log(abi=abi, log=__log))
         # return the args of each event in a dict
-        return tuple(_parse_event(event=_e, names=_inputs) for _e in _events)
+        return tuple(_parse_event(event=_e, names=__inputs) for _e in _events)
 
     return _parse_logs
 

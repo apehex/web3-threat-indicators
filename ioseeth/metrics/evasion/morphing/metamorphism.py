@@ -9,9 +9,9 @@ import ioseeth.parsing.bytecode
 
 # CONSTANTS ###################################################################
 
-RESET_OPCODES = (ioseeth.parsing.bytecode.SELFDESTRUCT, ioseeth.parsing.bytecode.DELEGATECALL, ioseeth.parsing.bytecode.CALLCODE)
-FACTORY_SELECTORS = ('aaf10f42', '0d917df4', '25ff967e', 'c7fcb49b') # getImplementation(), ?, setByteCode(bytes), ?
-GET_IMPLEMENTATION_SELECTORS = ('aaf10f42')
+RESET_OPCODES = (ioseeth.parsing.bytecode.SELFDESTRUCT, ioseeth.parsing.bytecode.DELEGATECALL, ioseeth.parsing.bytecode.CALLCODE,)
+FACTORY_SELECTORS = ('aaf10f42', '0d917df4', '25ff967e', 'c7fcb49b',) # getImplementation(), ?, setByteCode(bytes), ?
+GET_IMPLEMENTATION_SELECTORS = ('aaf10f42',)
 
 # INIT CODE ###################################################################
 
