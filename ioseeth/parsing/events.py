@@ -99,8 +99,6 @@ def parse_logs_factory(abi: dict=ERC20_TRANSFER_EVENT, codec: eth_abi.abi.ABICod
 
     def _parse_logs(logs: tuple) -> tuple:
         """Extract all the event matching a given ABI."""
-        # normalize
-        for __log in logs: __log.topics = tuple(HexBytes(__topic) for __topic in __log.topics)
         # parse
         _events = (get_event_data(log=__log, abi=abi, codec=codec) for __log in logs if _compare_abi_to_log(abi=abi, log=__log))
         # return the args of each event in a dict

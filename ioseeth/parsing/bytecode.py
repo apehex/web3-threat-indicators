@@ -6,6 +6,8 @@ https://blog.openzeppelin.com/deconstructing-a-solidity-contract-part-i-introduc
 
 import re
 
+import ioseeth.utils
+
 # OPCODES #####################################################################
 
 STOP = 0x00
@@ -29,24 +31,6 @@ HALTING = [STOP, RETURN, REVERT, INVALID, SELFDESTRUCT]
 
 is_halting = lambda opcode: opcode in HALTING
 is_push = lambda opcode: opcode >= PUSH1 and opcode <= PUSH32
-
-# GENERIC #####################################################################
-
-def is_raw_hex(bytecode: str) -> bool:
-    """Check whether the bytecode is a raw hexadecimal string or a sequence of opcodes."""
-    try:
-        int(bytecode, 16)
-        return True
-    except Exception:
-        return False
-
-# NORMALIZE ###################################################################
-
-def normalize(bytecode: str) -> str:
-    """Format the hex bytecode in a known and consistent way."""
-    return (
-        ((len(bytecode) % 2) * '0') # pad so that the length is pair => full bytes
-        + bytecode.lower().replace('0x', ''))
 
 # REGEX #######################################################################
 
@@ -112,16 +96,16 @@ def parse_creation_data(data: str) -> tuple:
     if len(__parts) > 2:
         __args = __parts[2]
     return (
-        normalize(__creation),
-        normalize(__runtime),
-        normalize(__metadata),
-        normalize(__args))
+        ioseeth.utils.to_hexstr(__creation),
+        ioseeth.utils.to_hexstr(__runtime),
+        ioseeth.utils.to_hexstr(__metadata),
+        ioseeth.utils.to_hexstr(__args))
 
 # INSTRUCTIONS ################################################################
 
 def iterate_over_instructions(bytecode: str) -> iter:
     """Split the bytecode into raw instructions and returns an iterator."""
-    __bytes = bytes.fromhex(normalize(bytecode))
+    __bytes = ioseeth.utils.to_bytes(bytecode)
     __i = 0
     while __i < len(__bytes):
         __len = 1 # instruction length in bytes
