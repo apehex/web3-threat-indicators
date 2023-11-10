@@ -6,7 +6,7 @@ https://blog.openzeppelin.com/deconstructing-a-solidity-contract-part-i-introduc
 
 import re
 
-import ioseeth.utils
+import forta_toolkit.parsing.common
 
 # OPCODES #####################################################################
 
@@ -96,16 +96,16 @@ def parse_creation_data(data: str) -> tuple:
     if len(__parts) > 2:
         __args = __parts[2]
     return (
-        ioseeth.utils.to_hexstr(__creation),
-        ioseeth.utils.to_hexstr(__runtime),
-        ioseeth.utils.to_hexstr(__metadata),
-        ioseeth.utils.to_hexstr(__args))
+        forta_toolkit.parsing.common.to_hexstr(__creation),
+        forta_toolkit.parsing.common.to_hexstr(__runtime),
+        forta_toolkit.parsing.common.to_hexstr(__metadata),
+        forta_toolkit.parsing.common.to_hexstr(__args))
 
 # INSTRUCTIONS ################################################################
 
 def iterate_over_instructions(bytecode: str) -> iter:
     """Split the bytecode into raw instructions and returns an iterator."""
-    __bytes = ioseeth.utils.to_bytes(bytecode)
+    __bytes = forta_toolkit.parsing.common.to_bytes(bytecode)
     __i = 0
     while __i < len(__bytes):
         __len = 1 # instruction length in bytes

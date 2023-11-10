@@ -2,8 +2,7 @@
 
 import pytest
 
-import ioseeth.parsing.abi as abi
-import tests.test_data as data
+import ioseeth.parsing.abi as ipa
 
 # FIXTURES ####################################################################
 
@@ -83,27 +82,27 @@ INTERFACES = {
 
 @pytest.fixture
 def erc777_abi():
-    return ioseeth.parsing.abi.load(path='interfaces/IERC777.json')
+    return ipa.load(path='interfaces/IERC777.json')
 
 @pytest.fixture
 def erc20_abi():
-    return ioseeth.parsing.abi.load(path='token/ERC20/ERC20.json')
+    return ipa.load(path='token/ERC20/ERC20.json')
 
 @pytest.fixture
 def erc721_abi():
-    return ioseeth.parsing.abi.load(path='token/ERC721/ERC721.json')
+    return ipa.load(path='token/ERC721/ERC721.json')
 
 @pytest.fixture
 def erc1155_abi():
-    return ioseeth.parsing.abi.load(path='token/ERC1155/ERC1155.json')
+    return ipa.load(path='token/ERC1155/ERC1155.json')
 
 # HASH ########################################################################
 
 def test_function_selector_hashing_on_common_abi(erc777_abi, erc20_abi, erc721_abi, erc1155_abi):
-    __erc777_function_selectors = abi.calculate_all_selectors(abi=erc777_abi, target='function')
-    __erc20_function_selectors = abi.calculate_all_selectors(abi=erc20_abi, target='function')
-    __erc721_function_selectors = abi.calculate_all_selectors(abi=erc721_abi, target='function')
-    __erc1155_function_selectors = abi.calculate_all_selectors(abi=erc1155_abi, target='function')
+    __erc777_function_selectors = list(ipa.map_selectors_to_signatures(abi=erc777_abi, target='function').keys())
+    __erc20_function_selectors = list(ipa.map_selectors_to_signatures(abi=erc20_abi, target='function').keys())
+    __erc721_function_selectors = list(ipa.map_selectors_to_signatures(abi=erc721_abi, target='function').keys())
+    __erc1155_function_selectors = list(ipa.map_selectors_to_signatures(abi=erc1155_abi, target='function').keys())
     assert all(__s in __erc777_function_selectors for __s in INTERFACES['erc-777'])
     assert all(__s in __erc20_function_selectors for __s in INTERFACES['erc-20'])
     assert all(__s in __erc721_function_selectors for __s in INTERFACES['erc-721'])

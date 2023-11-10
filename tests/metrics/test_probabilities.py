@@ -4,7 +4,6 @@ import pytest
 import random
 
 import ioseeth.metrics.probabilities as probabilities
-import tests.test_data as data
 
 # FIXTURES ####################################################################
 

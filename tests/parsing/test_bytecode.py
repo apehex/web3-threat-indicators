@@ -2,7 +2,8 @@
 
 import pytest
 
-import ioseeth.parsing.bytecode as bytecode
+import forta_toolkit.parsing.common as fpc
+import ioseeth.parsing.bytecode as ipc
 
 # FIXTURES ####################################################################
 
@@ -10,6 +11,6 @@ RAW = '0x608060405234801561001057600080fd5b50600436106100415760003560e01c80631c4
 
 # GENERIC #####################################################################
 
-def test_differentiate_raw_hew_from_opcodes():
-	assert bytecode.is_raw_hex(RAW)
-	assert not bytecode.is_raw_hex(' ')
+def test_differentiate_hexstr_from_opcodes():
+	assert fpc.is_hexstr(RAW)
+	assert not fpc.is_hexstr(' ')

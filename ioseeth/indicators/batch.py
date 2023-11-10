@@ -4,6 +4,7 @@ import itertools
 
 from web3 import Web3
 
+import forta_toolkit.parsing.common as fpc
 import ioseeth.indicators.wordlists as wordlists
 import ioseeth.parsing.abi as abi
 import ioseeth.parsing.balances as balances
@@ -19,7 +20,7 @@ KNOWN_SIGNATURES = (
 KNOWN_SELECTORS = {abi.calculate_selector(_s): _s for _s in KNOWN_SIGNATURES}
 
 def input_data_has_batching_selector(data: str, known: tuple=tuple(KNOWN_SELECTORS)) -> bool:
-    return data[:10].lower() in known # selector => signature mapping
+    return fpc.to_hexstr(data)[:8].lower() in known # selector => signature mapping
 
 # INPUTS INDICATORS ###########################################################
 

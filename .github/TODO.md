@@ -10,6 +10,7 @@
 [x] replace options with default values
 [x] use modules in bots
 [x] option to set the LRU cache size
+[ ] specify typings
 
 ## Parsing
 
@@ -45,7 +46,25 @@
     [ ] metamorphic traces
 [ ] modules:
     [ ] indicators
+        [ ] batch
+        [ ] events
+        [ ] generic
+        [ ] metamorphic
+        [ ] proxy
+        [ ] token
+        [ ] wordlists
     [ ] metrics
+        [ ] batch
+        [ ] evasion
+        [ ] generic
+        [ ] normal
+        [ ] probabilities
     [ ] parsing
+        [ ] abi
+        [ ] balances
+        [ ] bytecode
+        [ ] events
+        [ ] inputs
     [ ] scraping
+        [ ] bytecode
     [ ] utils

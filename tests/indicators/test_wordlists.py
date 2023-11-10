@@ -2,9 +2,8 @@
 
 import pytest
 
-import ioseeth.indicators.wordlists as wordlists
-import ioseeth.parsing.abi as abi
-import tests.test_data as data
+import ioseeth.indicators.wordlists as iiw
+import ioseeth.parsing.abi as ipa
 
 # FIXTURES ####################################################################
 
@@ -15,20 +14,20 @@ KNOWN_SIGNATURES = [
     'disperseToken(address,address[],uint256[])',]
 
 KNOWN_SELECTORS = [
-    '0xe63d38ed',
-    '0xc73a2d60',
-    '0xab883d28',
-    '0x0b66f3f5',]
+    'e63d38ed',
+    'c73a2d60',
+    'ab883d28',
+    '0b66f3f5',]
 
 @pytest.fixture
 def signature_wordlist():
     return (
-        wordlists.generate_signature_wordlist(pattern=wordlists.PATTERNS[0])
-        + wordlists.generate_signature_wordlist(pattern=wordlists.PATTERNS[1]))
+        iiw.generate_signature_wordlist(pattern=iiw.PATTERNS[0])
+        + iiw.generate_signature_wordlist(pattern=iiw.PATTERNS[1]))
 
 @pytest.fixture
 def selector_wordlist(signature_wordlist):
-    return [abi.calculate_selector(_s) for _s in signature_wordlist]
+    return [ipa.calculate_selector(_s) for _s in signature_wordlist]
 
 # SIGNATURES ##################################################################
 

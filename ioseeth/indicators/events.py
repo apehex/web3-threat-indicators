@@ -2,6 +2,7 @@
 
 import enum
 
+import forta_toolkit.parsing.common
 import ioseeth.parsing.abi
 import ioseeth.parsing.events
 import ioseeth.utils
@@ -78,7 +79,8 @@ def erc721_transfer_constraints(inputs: dict, **kwargs) -> int:
 
 def check_event_constraints(log: dict, index: dict=EVENT_INDEX, empty_metadata: dict=EMPTY_EVENT_METADATA, empty_abi: dict=EMPTY_EVENT_ABI) -> int:
     """Check the log against its matching constraints."""
-    __hash = getattr(log, 'topics', (b'',))[0].hex().lower().replace('0x', '')
+    __topics = forta_toolkit.parsing.common.get_field(dataset=log, keys=('topics',), default=(b'',), callback=lambda __l: [forta_toolkit.parsing.common.to_bytes(__t) for __t in __l])
+    __hash = forta_toolkit.parsing.common.to_hexstr(__topics[0])
     __metadata = index.get(__hash, empty_metadata)
     __constraints = __metadata.get('constraints', _no_constraints)
     __abi = __metadata.get('abi', empty_abi)

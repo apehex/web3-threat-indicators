@@ -6,22 +6,21 @@ import itertools
 import json
 
 import eth_abi.abi
-import eth_utils.abi
+import web3._utils.abi
 import web3._utils.events
 
-from hexbytes import HexBytes
-from web3._utils.abi import build_strict_registry
-from web3.types import ABIEvent, LogReceipt
+import forta_toolkit.parsing.common
+import ioseeth.parsing.abi
 
 # ABIs ########################################################################
 
 # TODO variants with / without indexing
 
-ERC20_APPROVAL_EVENT = ABIEvent(json.loads('{"name":"Approval","type":"event","anonymous":false,"inputs":[{"indexed":true,"name":"_owner","type":"address"},{"indexed":true,"name":"_spender","type":"address"},{"indexed":false,"name":"_value","type":"uint256"}]}'))
-ERC20_TRANSFER_EVENT = ABIEvent(json.loads('{"name":"Transfer","type":"event","anonymous":false,"inputs":[{"indexed":true,"name":"_from","type":"address"},{"indexed":true,"name":"_to","type":"address"},{"indexed":false,"name":"_value","type":"uint256"}]}'))
-ERC721_APPROVAL_EVENT = ABIEvent(json.loads('{"name":"Approval","type":"event","anonymous":false,"inputs":[{"indexed":true,"name":"_owner","type":"address"},{"indexed":true,"name":"_approved","type":"address"},{"indexed":true,"name":"_tokenId","type":"uint256"}]}'))
-ERC721_APPROVAL_FOR_ALL_EVENT = ABIEvent(json.loads('{"name":"ApprovalForAll","type":"event","anonymous":false,"inputs":[{"indexed":true,"name":"_owner","type":"address"},{"indexed":true,"name":"_operator","type":"address"},{"indexed":false,"name":"_approved","type":"bool"}]}'))
-ERC721_TRANSFER_EVENT = ABIEvent(json.loads('{"name":"Transfer","type":"event","anonymous":false,"inputs":[{"indexed":true,"name":"_from","type":"address"},{"indexed":true,"name":"_to","type":"address"},{"indexed":true,"name":"_tokenId","type":"uint256"}]}'))
+ERC20_APPROVAL_EVENT = json.loads('{"name":"Approval","type":"event","anonymous":false,"inputs":[{"indexed":true,"name":"_owner","type":"address"},{"indexed":true,"name":"_spender","type":"address"},{"indexed":false,"name":"_value","type":"uint256"}]}')
+ERC20_TRANSFER_EVENT = json.loads('{"name":"Transfer","type":"event","anonymous":false,"inputs":[{"indexed":true,"name":"_from","type":"address"},{"indexed":true,"name":"_to","type":"address"},{"indexed":false,"name":"_value","type":"uint256"}]}')
+ERC721_APPROVAL_EVENT = json.loads('{"name":"Approval","type":"event","anonymous":false,"inputs":[{"indexed":true,"name":"_owner","type":"address"},{"indexed":true,"name":"_approved","type":"address"},{"indexed":true,"name":"_tokenId","type":"uint256"}]}')
+ERC721_APPROVAL_FOR_ALL_EVENT = json.loads('{"name":"ApprovalForAll","type":"event","anonymous":false,"inputs":[{"indexed":true,"name":"_owner","type":"address"},{"indexed":true,"name":"_operator","type":"address"},{"indexed":false,"name":"_approved","type":"bool"}]}')
+ERC721_TRANSFER_EVENT = json.loads('{"name":"Transfer","type":"event","anonymous":false,"inputs":[{"indexed":true,"name":"_from","type":"address"},{"indexed":true,"name":"_to","type":"address"},{"indexed":true,"name":"_tokenId","type":"uint256"}]}')
 
 def _get_input_names(abi: dict) -> tuple:
     """Extract the name of each input of an event, from its ABI."""
@@ -29,7 +28,7 @@ def _get_input_names(abi: dict) -> tuple:
 
 def _abi_codec() -> eth_abi.abi.ABICodec:
     """Wrapper around the registry for encoding & decoding ABIs."""
-    return eth_abi.abi.ABICodec(build_strict_registry())
+    return eth_abi.abi.ABICodec(web3._utils.abi.build_strict_registry())
 
 def _apply_indexation_mask(abi: dict, mask: tuple) -> dict:
     """Change the "indexed" field of the ABI according to the mask."""
@@ -53,23 +52,24 @@ def _generate_the_most_probable_abi_indexation_variant(abi: dict, indexed: int) 
     __mask = indexed * (True,) + (__count - indexed) * (False,) # index from left to right, without gaps
     return _apply_indexation_mask(abi=abi, mask=__mask)
 
-def _compare_abi_to_log(abi: dict, log: LogReceipt) -> bool:
-    """Returns True if abit and log match, False otherwise."""
+def _compare_abi_to_log(abi: dict, log: dict) -> bool:
+    """Returns True if the abi and log match, False otherwise."""
+    __topics = log.get('topics', ())
     return (
-        bool(getattr(log, 'topics', ()))
-        and eth_utils.abi.event_abi_to_log_topic(abi) == log['topics'][0]) # compare bytes
+        bool(__topics)
+        and ioseeth.parsing.abi.calculate_hash(abi=abi) == forta_toolkit.parsing.common.to_hexstr(__topics[0])) # compare hexstr
 
 # FORMAT ######################################################################
 
-def _get_arg_value(event: 'AttributeDict', name: str) -> str:
+def _get_arg_value(event: dict, name: str) -> str:
     """Extract the value of an event input from its log."""
     return str(event.get('args', {}).get(name, ''))
 
-def _get_token_address(event: 'AttributeDict') -> str:
+def _get_token_address(event: dict) -> str:
     """Extract the address of the token that emitted the event."""
     return str((event.get('address', '')))
 
-def _parse_event(event: 'AttributeDict', names: tuple) -> dict:
+def _parse_event(event: dict, names: tuple) -> dict:
     """Extract the relevant data from a log and format it."""
     return {
         'token': _get_token_address(event=event),
@@ -81,7 +81,7 @@ def _parse_event(event: 'AttributeDict', names: tuple) -> dict:
 
 def get_event_data(log: dict, abi: dict, codec: eth_abi.abi.ABICodec=_abi_codec()) -> dict:
     """Extract event data from the hex log topics."""
-    __abi = _generate_the_most_probable_abi_indexation_variant(abi=abi, indexed=len(log.topics) - 1)
+    __abi = _generate_the_most_probable_abi_indexation_variant(abi=abi, indexed=len(log.get('topics', [])) - 1)
     return web3._utils.events.get_event_data(codec, __abi, log)
 
 def parse_event_log(log: dict, abi: dict, codec: eth_abi.abi.ABICodec=_abi_codec()) -> dict:

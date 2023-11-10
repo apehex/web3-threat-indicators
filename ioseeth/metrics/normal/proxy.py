@@ -1,7 +1,5 @@
 """Evaluate the probability that multiple transfers were bundled in a transaction."""
 
-from web3 import Web3
-
 import ioseeth.indicators.proxy
 import ioseeth.metrics.probabilities
 
