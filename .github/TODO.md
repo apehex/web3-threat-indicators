@@ -32,7 +32,7 @@
     [x] erc-721
     [ ] erc-1155
     [ ] erc-1967
-[ ] red pill contracts
+[x] red pill contracts
 [ ] scan ALL the data:
     [ ] for example, the metamorphic init code can be in: the factory creation bytecode, the factory runtime bytecode, the mutation input data, yet another contract...
     [ ] the implementation address can be retrieved from the factory or another contract

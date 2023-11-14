@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.16
+
+### Additions
+
+- detect red-pill contracts on creation
+
 ## v0.1.12 - v0.1.15
 
 ### Changes

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ioseeth"
-version = "0.1.15"
+version = "0.1.16"
 description = "Utilities to parse blockchain data and look for threat indicators"
 authors = ["apehex <apehex@protonmail.com>"]
 readme = ".github/README.md"
@@ -10,7 +10,7 @@ python = ">=3.9, <4"
 setuptools = ">=68"
 web3 = ">=5"
 forta-toolkit = {path = "../toolkit/", develop = true}
-#forta-toolkit = ">=0.1.22"
+# forta-toolkit = ">=0.1.22"
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=7"
