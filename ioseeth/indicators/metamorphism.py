@@ -4,6 +4,8 @@ import ioseeth.parsing.bytecode
 
 # KNWON #######################################################################
 
+# TODO replace with a generic regex
+
 INIT_CODES = (
     '5860208158601c335a63aaf10f428752fa158151803b80938091923cf3',)
 

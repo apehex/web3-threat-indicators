@@ -59,7 +59,7 @@ def is_trace_factory_contract_creation(
     __scores = []
     # trace must be a contract creation
     __scores.append(ioseeth.metrics.probabilities.indicator_to_probability(
-        indicator='create' in action, # works also for create2
+        indicator='create' in action.lower(), # works also for create2
         true_score=0.5, # legitimate contracts also use CREATE
         false_score=0.1)) # not a contract creation
     # static analysis: the runtime bytecode deploys implementation with CREATE
@@ -131,7 +131,7 @@ def is_trace_mutant_contract_creation(
     __runtime = forta_toolkit.parsing.common.to_hexstr(runtime_bytecode)
     # trace must be a contract creation
     __scores.append(ioseeth.metrics.probabilities.indicator_to_probability(
-        indicator='create' in action, # unfortunately transaction traces don't differentiate CREATE and CREATE2
+        indicator='create' in action.lower(), # unfortunately transaction traces don't differentiate CREATE and CREATE2
         true_score=0.5, # legitimate contracts also use CREATE ofc
         false_score=0.1)) # not a contract creation
     # the creation bytecode is actually metamorphic init code
