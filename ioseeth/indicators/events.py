@@ -23,27 +23,9 @@ def _no_constraints(**kwargs) -> int:
     """Default function for non indexed events, always return EventIssue.Null"""
     return EventIssue.Null
 
-EMPTY_EVENT_ABI = {'name': '', 'inputs': (), 'type': 'event'}
-EMPTY_EVENT_METADATA = {'signature': '', 'parent': '', 'abi': EMPTY_EVENT_ABI, 'constraints': _no_constraints}
-    
-# ABIS ########################################################################
-
-ABIS = {
-    'erc-777': ioseeth.parsing.abi.load(path='interfaces/IERC777.json'),
-    'erc-20': ioseeth.parsing.abi.load(path='token/ERC20/ERC20.json'),
-    # 'erc-721': ioseeth.parsing.abi.load(path='token/ERC721/ERC721.json'),
-    'erc-1155': ioseeth.parsing.abi.load(path='token/ERC1155/ERC1155.json'),}
-
 # MAP TOPICS TO CONSTRAINTS ###################################################
 
-def map_hashes_to_event_metadata(abis: tuple=ABIS) -> dict:
-    """Create a map from event hash (topic) to event metadata (constraints)."""
-    return {
-        __hash: {'signature': ioseeth.parsing.abi.calculate_signature(abi=__child_abi), 'parent': __parent, 'abi': __child_abi, 'constraints': _no_constraints}
-        for __parent, __parent_abi in abis.items()
-        for __hash, __child_abi in ioseeth.parsing.abi.map_hashes_to_abis(abi=__parent_abi, target='event').items()}
-
-EVENT_INDEX = map_hashes_to_event_metadata(abis=ABIS)
+EVENT_CONSTRAINTS = {__hash: _no_constraints for __hash, _ in ioseeth.parsing.events.EVENT_ABIS.items()}
 
 # ERC-20 ######################################################################
 
@@ -60,7 +42,7 @@ def erc20_transfer_constraints(inputs: dict, **kwargs) -> int:
         return EventIssue.ERC20_TransferNullAmount
     return EventIssue.Null
 
-EVENT_INDEX[ioseeth.utils.keccak(text='Transfer(address,address,uint256)')]['constraints'] = erc20_transfer_constraints
+EVENT_CONSTRAINTS[ioseeth.utils.keccak(text='Transfer(address,address,uint256)')] = erc20_transfer_constraints
 
 # ERC-721 #####################################################################
 
@@ -75,14 +57,16 @@ def erc721_transfer_constraints(inputs: dict, **kwargs) -> int:
 
 # ERC-1155 ####################################################################
 
+# PARSE EVENTS ################################################################
+
+def get_event_constraints(log: dict, default: callable=_no_constraints, index: dict=EVENT_CONSTRAINTS) -> callable:
+    """Return the constraints for known events or empty constraints that can still be processed."""
+    return index.get(ioseeth.parsing.events._get_log_topics_hash(log=log), default)
+
 # CHECK ALL CONSTRAINTS #######################################################
 
-def check_event_constraints(log: dict, index: dict=EVENT_INDEX, empty_metadata: dict=EMPTY_EVENT_METADATA, empty_abi: dict=EMPTY_EVENT_ABI) -> int:
+def check_event_constraints(log: dict, default: callable=_no_constraints, index: dict=EVENT_CONSTRAINTS) -> int:
     """Check the log against its matching constraints."""
-    __topics = forta_toolkit.parsing.common.get_field(dataset=log, keys=('topics',), default=(b'',), callback=lambda __l: [forta_toolkit.parsing.common.to_bytes(__t) for __t in __l])
-    __hash = forta_toolkit.parsing.common.to_hexstr(__topics[0])
-    __metadata = index.get(__hash, empty_metadata)
-    __constraints = __metadata.get('constraints', _no_constraints)
-    __abi = __metadata.get('abi', empty_abi)
-    __data = ioseeth.parsing.events.parse_event_log(log=log, abi=__abi)
-    return __constraints(inputs=__data)
+    __constraints = get_event_constraints(log=log, default=default, index=index)
+    __inputs = ioseeth.parsing.events.parse_event_log(log=log)
+    return __constraints(inputs=__inputs)

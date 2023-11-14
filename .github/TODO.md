@@ -15,7 +15,7 @@
 ## Parsing
 
 [x] operate on bytecode instead of assembly
-[ ] split creation data into: creation bytecode + runtime bytecode + args
+[x] split creation data into: creation bytecode + runtime bytecode + args
 [x] move interfaces in `token.py` to the ABI tests
 
 ## Metrics
@@ -29,7 +29,7 @@
     [ ] `is_bytecode_metamorphic_init_code` => `HAS_bytecode_metamorphic_init_code`: equality vs inclusion => broader
 [ ] event poisoning
     [x] erc-20
-    [ ] erc-721
+    [x] erc-721
     [ ] erc-1155
     [ ] erc-1967
 [ ] red pill contracts
@@ -41,8 +41,8 @@
 ## Testing
 
 [ ] test on cryo data
-[ ] pickle dataset:
-    [ ] metamorphic tx
+[x] pickle dataset:
+    [x] metamorphic tx
     [ ] metamorphic traces
 [ ] modules:
     [ ] indicators

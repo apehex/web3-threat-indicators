@@ -36,7 +36,7 @@ def calculate_selector(signature: str) -> str:
     """Compute the selector for a single signature."""
     return (ioseeth.utils.keccak(text=signature.replace(' ', '')))[:8] # 4 bytes without prefix
 
-# ABI #########################################################################
+# INDEX #######################################################################
 
 def map_hashes_to_abis(abi: tuple, target: str='function') -> dict:
     """Compute the hash of each element in the ABI and returns a dictionary {hash => ABI}."""
@@ -57,3 +57,11 @@ def map_hashes_to_signatures(abi: tuple, target: str='function') -> dict:
 def map_selectors_to_signatures(abi: tuple, target: str='function') -> dict:
     """Compute the selector of each element in the ABI and returns a dictionary {selector => signature}."""
     return {__hash[:8]: __signature for __hash, __signature in map_hashes_to_signatures(abi=abi, target=target).items()}
+
+# ABIS ########################################################################
+
+ABIS = {
+    'erc-777': load(path='interfaces/IERC777.json'),
+    'erc-20': load(path='token/ERC20/ERC20.json'),
+    # 'erc-721': load(path='token/ERC721/ERC721.json'),
+    'erc-1155': load(path='token/ERC1155/ERC1155.json'),}

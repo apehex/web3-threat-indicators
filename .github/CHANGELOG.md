@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.1.12 - v0.1.15
+
+### Changes
+
+- parse event logs without any input ABI
+
+### Additions
+
+- index common ABIs / events
+- check event constraints on tokens
+
 ## v0.1.11
 
 ### Changes
