@@ -27,9 +27,19 @@ def _no_constraints(**kwargs) -> int:
 
 EVENT_CONSTRAINTS = {__hash: _no_constraints for __hash, _ in ioseeth.parsing.events.EVENT_ABIS.items()}
 
-# ERC-20 ######################################################################
+def get_event_constraints(log: dict, default: callable=_no_constraints, index: dict=EVENT_CONSTRAINTS) -> callable:
+    """Return the constraints for known events or empty constraints that can still be processed."""
+    return index.get(ioseeth.parsing.events._get_log_topics_hash(log=log), default)
 
-# check whether "from" is a legit contract?
+# CHECK ALL CONSTRAINTS #######################################################
+
+def check_event_constraints(log: dict, default: callable=_no_constraints, index: dict=EVENT_CONSTRAINTS) -> int:
+    """Check the log against its matching constraints."""
+    __constraints = get_event_constraints(log=log, default=default, index=index)
+    __inputs = ioseeth.parsing.events.parse_event_log(log=log)
+    return __constraints(inputs=__inputs)
+
+# ERC-20 ######################################################################
 
 def erc20_transfer_constraints(inputs: dict, **kwargs) -> int:
     """Check constraints on ERC20 """
@@ -55,18 +65,6 @@ def erc721_transfer_constraints(inputs: dict, **kwargs) -> int:
         return EventIssue.ERC20_TransferSenderEqualsRecipient
     return EventIssue.Null
 
+# EVENT_CONSTRAINTS[ioseeth.utils.keccak(text='Transfer(address,address,uint256)')] = erc721_transfer_constraints # ERC-20 and ERC-712 transfer events have the same signature
+
 # ERC-1155 ####################################################################
-
-# PARSE EVENTS ################################################################
-
-def get_event_constraints(log: dict, default: callable=_no_constraints, index: dict=EVENT_CONSTRAINTS) -> callable:
-    """Return the constraints for known events or empty constraints that can still be processed."""
-    return index.get(ioseeth.parsing.events._get_log_topics_hash(log=log), default)
-
-# CHECK ALL CONSTRAINTS #######################################################
-
-def check_event_constraints(log: dict, default: callable=_no_constraints, index: dict=EVENT_CONSTRAINTS) -> int:
-    """Check the log against its matching constraints."""
-    __constraints = get_event_constraints(log=log, default=default, index=index)
-    __inputs = ioseeth.parsing.events.parse_event_log(log=log)
-    return __constraints(inputs=__inputs)
