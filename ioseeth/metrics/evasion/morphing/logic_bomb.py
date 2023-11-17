@@ -1,5 +1,6 @@
 """Evaluate the probability that multiple transfers were bundled in a transaction."""
 
+import collections.abc
 from web3 import Web3
 
 import ioseeth.metrics.probabilities
@@ -36,3 +37,18 @@ def is_trace_red_pill_contract_creation(
         true_score=0.8,
         false_score=0.5))
     return ioseeth.metrics.probabilities.conflation(__scores)
+
+def is_traces_red_pill_contract_creation(
+    traces: collections.abc.Iterable,
+    **kwargs
+) -> float:
+    """Evaluate the probability that any internal transaction (re)deployed a mutant contract.
+    0x0f7c1dad199b29bc016c0984194b7b29ba68b130bd3d9a83e5bb20de7159d33c
+    0x29b2d5787757d494907b349662a3730340c88641d5ae78037928c2870d2b4cce"""
+    __scores = [
+        is_trace_red_pill_contract_creation(
+            action=__t.get('type', ''),
+            runtime_bytecode=__t.get('output', ''))
+        for __t in traces]
+    # a single match is enough
+    return max(__scores)

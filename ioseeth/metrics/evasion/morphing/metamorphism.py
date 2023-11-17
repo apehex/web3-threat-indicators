@@ -1,5 +1,8 @@
 """Evaluate the probability that contracts mutate / can change their code."""
 
+import collections.abc
+import typing
+
 from web3 import Web3
 
 import forta_toolkit.parsing.common
@@ -80,6 +83,22 @@ def is_trace_factory_contract_creation(
     # combine
     return ioseeth.metrics.probabilities.conflation(__scores)
 
+def is_traces_factory_contract_creation(
+    traces: collections.abc.Iterable,
+    **kwargs
+) -> float:
+    """Evaluate the probability that any internal transaction deployed a metamorphic factory.
+    0x0f7c1dad199b29bc016c0984194b7b29ba68b130bd3d9a83e5bb20de7159d33c
+    0x29b2d5787757d494907b349662a3730340c88641d5ae78037928c2870d2b4cce"""
+    __scores = [
+        is_trace_factory_contract_creation(
+            action=__t.get('type', ''),
+            creation_bytecode=__t.get('input', ''),
+            runtime_bytecode=__t.get('output', ''))
+        for __t in traces]
+    # a single match is enough
+    return max(__scores)
+
 def is_transaction_factory_contract_deployment(
     to: str, # tx.to
     data: str, # tx.data
@@ -103,13 +122,6 @@ def is_transaction_factory_contract_deployment(
     return ioseeth.metrics.probabilities.conflation(__scores)
 
 # TRANSIENT CONTRACT ##########################################################
-
-def is_transaction_transient_contract_deployment() -> float:
-    """Evaluate the probability that a transaction deployed a transient contract.
-    0x3c48308839cc60046615d0b0984ded9e47ac9467a2692cfd19e1c7abcb30d6e5"""
-    __scores = []
-    # combine
-    return ioseeth.metrics.probabilities.conflation(__scores)
 
 # IMPLEMENTATION ##############################################################
 
@@ -144,9 +156,18 @@ def is_trace_mutant_contract_creation(
     # the code changed
     return ioseeth.metrics.probabilities.conflation(__scores)
 
-def is_transaction_mutant_contract_deployment() -> float:
-    """Evaluate the probability that a transaction (re)deployed a mutant contract.
-    0x2309f6e8e041dfadafbd73c60b08f33e60337b6330704b494f902bb9c4766fb3
-    0x3bfcc1c5838ee17eec1ddda2f1ff0ac1c1ccdbd30dd520ee41215c54227a847f"""
-    __scores = []
-    return ioseeth.metrics.probabilities.conflation(__scores)
+def is_traces_mutant_contract_creation(
+    traces: collections.abc.Iterable,
+    **kwargs
+) -> float:
+    """Evaluate the probability that any internal transaction (re)deployed a mutant contract.
+    0x0f7c1dad199b29bc016c0984194b7b29ba68b130bd3d9a83e5bb20de7159d33c
+    0x29b2d5787757d494907b349662a3730340c88641d5ae78037928c2870d2b4cce"""
+    __scores = [
+        is_trace_mutant_contract_creation(
+            action=__t.get('type', ''),
+            creation_bytecode=__t.get('input', ''),
+            runtime_bytecode=__t.get('output', ''))
+        for __t in traces]
+    # a single match is enough
+    return max(__scores)
