@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.1.19
+
+### Changes
+
+- account for compiler optimization in the red-pill regex
+
+## v0.1.17 - v0.1.18
+
+### Additions
+
+- analyse all traces at once
+
 ## v0.1.16
 
 ### Additions

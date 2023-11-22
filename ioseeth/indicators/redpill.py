@@ -10,7 +10,7 @@ def cast_to_address_regex() -> str:
 
 def null_value_regex() -> str:
     """Regex matching a null value: PUSH 0 then optionally DUP."""
-    return r'(?:6000|5f)(?:8[012])'
+    return r'(?:6000|5f)(?:8[01234])?'
 
 def null_address_regex() -> str:
     """Regex matching a null address, in the bytecode."""
@@ -21,21 +21,28 @@ def coinbase_address_regex() -> str:
     return r'41' + cast_to_address_regex()
 
 def equality_test_regex() -> str:
-    """Regex matching an equality test: SUB / EQ then PUSH the destination then JUMPI."""
-    return r'(?:03|1415)6[012][0-9a-f]{2,6}57'
+    """Regex matching an equality test: SUB / EQ."""
+    return r'(?:03|1415)'
+
+def jumpi_regex() -> str:
+    """Regex matching a conditional jump: PUSH the destination then JUMPI."""
+    return r'6[012][0-9a-f]{2,6}57'
 
 def coinbase_test_regex() -> str:
     """Regex matching a test on block.coinbase, in the bytecode."""
-    __coinbase = coinbase_address_regex()
-    __null = null_address_regex()
+    __coinbase = '41'
+    __null = null_value_regex()
+    __cast = cast_to_address_regex()
     __eq = equality_test_regex()
-    return '(?:{null})?{coinbase}(?:{null})?{test}'.format(null=__null, coinbase=__coinbase, test=__eq)
+    __jump = jumpi_regex()
+    return '(?:{null})?(?:{cast})?{coinbase}(?:{cast})?(?:{null})?(?:{cast})?(?:{test})?{jump}'.format(null=__null, cast=__cast, coinbase=__coinbase, test=__eq, jump=__jump)
 
 def difficulty_test_regex() -> str:
     """Regex matching a test on block.difficulty / prevrandao (0x44), in the bytecode."""
     __null = null_value_regex()
     __eq = equality_test_regex()
-    return '{null}44{test}'.format(null=__null, test=__eq)
+    __jump = jumpi_regex()
+    return '(?:{null})?44(?:{test})?{jump}'.format(null=__null, test=__eq, jump=__jump)
 
 # RED-PILL TESTS ##############################################################
 
