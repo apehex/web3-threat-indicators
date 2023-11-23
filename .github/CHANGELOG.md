@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.20
+
+### Fixes
+
+- solve false positives for the red-pill indicators (regex for opt bytecode was too lax)
+
 ## v0.1.19
 
 ### Changes

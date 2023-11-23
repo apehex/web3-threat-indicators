@@ -2,6 +2,8 @@
 
 import re
 
+import ioseeth.parsing.bytecode
+
 # REGEX #######################################################################
 
 def cast_to_address_regex() -> str:
@@ -48,8 +50,16 @@ def difficulty_test_regex() -> str:
 
 def bytecode_has_coinbase_test(bytecode: str) -> bool:
     """Check whether the contract tries to detect a simulation env by looking for default values in block.coinbase."""
-    return bool(re.findall(pattern=coinbase_test_regex(), string=bytecode))
+    __match = False
+    # make sure data is not interpreted as the COINBASE opcode (HEX in PUSH instruction or HEX after the end of the contract)
+    if ioseeth.parsing.bytecode.bytecode_has_specific_opcode(bytecode=bytecode, opcode=ioseeth.parsing.bytecode.COINBASE):
+        __match = bool(re.findall(pattern=coinbase_test_regex(), string=bytecode))
+    return __match
 
 def bytecode_has_difficulty_test(bytecode: str) -> bool:
     """Check whether the contract tries to detect a simulation env by looking for default values in block.difficulty."""
-    return bool(re.findall(pattern=difficulty_test_regex(), string=bytecode))
+    __match = False
+    # make sure data is not interpreted as the PREVRANDAO / DIFFICULTY opcode (HEX in PUSH instruction or HEX after the end of the contract)
+    if ioseeth.parsing.bytecode.bytecode_has_specific_opcode(bytecode=bytecode, opcode=ioseeth.parsing.bytecode.PREVRANDAO):
+        __match = bool(re.findall(pattern=difficulty_test_regex(), string=bytecode))
+    return __match

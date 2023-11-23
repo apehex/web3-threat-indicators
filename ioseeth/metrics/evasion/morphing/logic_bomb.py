@@ -20,6 +20,8 @@ def is_trace_red_pill_contract_creation(
 ) -> float:
     """Evaluate the probability that a contract has the capacity to evade simulation environments."""
     __scores = []
+    # remove the metadata
+    __bytecode = ioseeth.parsing.bytecode.split_metadata(bytecode=runtime_bytecode)[0]
     # trace must be a contract creation
     __scores.append(ioseeth.metrics.probabilities.indicator_to_probability(
         indicator='create' in action.lower(), # works also for create2
@@ -27,12 +29,12 @@ def is_trace_red_pill_contract_creation(
         false_score=0.1)) # not a contract creation
     # contract checks block.coinbase agains default values
     __scores.append(ioseeth.metrics.probabilities.indicator_to_probability(
-        indicator=ioseeth.indicators.redpill.bytecode_has_coinbase_test(bytecode=runtime_bytecode),
+        indicator=ioseeth.indicators.redpill.bytecode_has_coinbase_test(bytecode=__bytecode),
         true_score=0.8,
         false_score=0.5))
     # contract checks block.difficulty agains default values
     __scores.append(ioseeth.metrics.probabilities.indicator_to_probability(
-        indicator=ioseeth.indicators.redpill.bytecode_has_difficulty_test(bytecode=runtime_bytecode),
+        indicator=ioseeth.indicators.redpill.bytecode_has_difficulty_test(bytecode=__bytecode),
         true_score=0.8,
         false_score=0.5))
     return ioseeth.metrics.probabilities.conflation(__scores)
