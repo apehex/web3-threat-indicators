@@ -64,4 +64,5 @@ ABIS = {
     'erc-777': load(path='interfaces/IERC777.json'),
     'erc-20': load(path='token/ERC20/ERC20.json'),
     # 'erc-721': load(path='token/ERC721/ERC721.json'),
-    'erc-1155': load(path='token/ERC1155/ERC1155.json'),}
+    'erc-1155': load(path='token/ERC1155/ERC1155.json'),
+    'uniswapv3-pool': load(path='interfaces/IUniswapV3Pool.json')}
