@@ -5,7 +5,7 @@ import typing
 
 from web3 import Web3
 
-import forta_toolkit.parsing.common
+import toolblocks.parsing.common
 
 import ioseeth.indicators.generic
 import ioseeth.indicators.metamorphism
@@ -139,8 +139,8 @@ def is_trace_mutant_contract_creation(
     0x2309f6e8e041dfadafbd73c60b08f33e60337b6330704b494f902bb9c4766fb3
     0x3bfcc1c5838ee17eec1ddda2f1ff0ac1c1ccdbd30dd520ee41215c54227a847f"""
     __scores = []
-    __creation = forta_toolkit.parsing.common.to_hexstr(creation_bytecode)
-    __runtime = forta_toolkit.parsing.common.to_hexstr(runtime_bytecode)
+    __creation = toolblocks.parsing.common.to_hexstr(creation_bytecode)
+    __runtime = toolblocks.parsing.common.to_hexstr(runtime_bytecode)
     # trace must be a contract creation
     __scores.append(ioseeth.metrics.probabilities.indicator_to_probability(
         indicator='create' in action.lower(), # unfortunately transaction traces don't differentiate CREATE and CREATE2

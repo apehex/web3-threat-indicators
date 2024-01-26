@@ -1,7 +1,7 @@
 import os.path
 import pytest
 
-import forta_toolkit.parsing.common as fpc
+import toolblocks.parsing.common as fpc
 import ioseeth.utils as iu
 
 # FIXTURES ####################################################################

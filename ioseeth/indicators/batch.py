@@ -4,7 +4,7 @@ import itertools
 
 from web3 import Web3
 
-import forta_toolkit.parsing.common as fpc
+import toolblocks.parsing.common as fpc
 import ioseeth.indicators.wordlists as wordlists
 import ioseeth.parsing.abi as abi
 import ioseeth.parsing.balances as balances

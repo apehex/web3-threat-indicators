@@ -6,7 +6,7 @@ https://blog.openzeppelin.com/deconstructing-a-solidity-contract-part-i-introduc
 
 import re
 
-import forta_toolkit.parsing.common
+import toolblocks.parsing.common
 
 # OPCODES #####################################################################
 
@@ -97,16 +97,16 @@ def parse_creation_data(data: str) -> tuple:
     if len(__parts) > 2:
         __args = __parts[2]
     return (
-        forta_toolkit.parsing.common.to_hexstr(__creation),
-        forta_toolkit.parsing.common.to_hexstr(__runtime),
-        forta_toolkit.parsing.common.to_hexstr(__metadata),
-        forta_toolkit.parsing.common.to_hexstr(__args))
+        toolblocks.parsing.common.to_hexstr(__creation),
+        toolblocks.parsing.common.to_hexstr(__runtime),
+        toolblocks.parsing.common.to_hexstr(__metadata),
+        toolblocks.parsing.common.to_hexstr(__args))
 
 # INSTRUCTIONS ################################################################
 
 def iterate_over_instructions(bytecode: str) -> iter:
     """Split the bytecode into raw instructions and returns an iterator."""
-    __bytes = forta_toolkit.parsing.common.to_bytes(bytecode)
+    __bytes = toolblocks.parsing.common.to_bytes(bytecode)
     __i = 0
     while __i < len(__bytes):
         __len = 1 # instruction length in bytes
@@ -137,7 +137,7 @@ def bytecode_has_specific_opcodes(bytecode: str, opcodes: tuple, check: callable
 
 # SELECTORS ###################################################################
 
-def get_function_selectors(bytecode: str, raw: bool=False) -> tuple:
+def get_function_selectors(bytecode: str, raw: bool=True) -> tuple:
     """Get all the function selectors from the hub portion of the bytecode."""
     _r = re.compile(selector_regex(raw=raw), flags=re.IGNORECASE)
     return tuple(set(_r.findall(bytecode)))
@@ -146,7 +146,7 @@ def get_function_selectors(bytecode: str, raw: bool=False) -> tuple:
 
 #TODO SLOAD could use a computed address instead of a hardcoded one => fetching only the 32 bytes words is too naive
 
-def get_storage_slots(bytecode: str, raw: bool=False) -> str:
+def get_storage_slots(bytecode: str, raw: bool=True) -> str:
     """Get all the storage slots used in the bytecode."""
     _r = re.compile(storage_slot_regex(raw=raw), flags=re.IGNORECASE)
     return tuple(set(_r.findall(bytecode)))

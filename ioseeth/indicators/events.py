@@ -2,7 +2,7 @@
 
 import enum
 
-import forta_toolkit.parsing.common
+import toolblocks.parsing.common
 import ioseeth.parsing.abi
 import ioseeth.parsing.events
 import ioseeth.utils

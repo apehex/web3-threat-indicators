@@ -2,7 +2,7 @@
 
 import pytest
 
-import forta_toolkit.parsing.common as fpc
+import toolblocks.parsing.common as fpc
 import ioseeth.parsing.bytecode as ipc
 
 # FIXTURES ####################################################################

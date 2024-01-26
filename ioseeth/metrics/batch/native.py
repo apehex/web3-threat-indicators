@@ -1,6 +1,6 @@
 """Evaluate the probability that a transaction resulted in transfers of native tokens."""
 
-import forta_toolkit.parsing.common
+import toolblocks.parsing.common
 
 import ioseeth.indicators.batch
 import ioseeth.metrics.probabilities
@@ -18,7 +18,7 @@ def confidence_score(
     """Evaluate the probability that a transaction resulted in transfers of native tokens."""
     _scores = []
     # parse
-    __value = forta_toolkit.parsing.common.to_int(value) # all the transaction data is formated as hexstr
+    __value = toolblocks.parsing.common.to_int(value) # all the transaction data is formated as hexstr
     # "from" contract balance significantly changed
     _scores.append(ioseeth.metrics.probabilities.indicator_to_probability(
         indicator=__value >= max_batching_fee, # mvt below 0.1 ETH are ignored

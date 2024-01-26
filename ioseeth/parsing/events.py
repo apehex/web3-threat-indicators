@@ -9,7 +9,7 @@ import eth_abi.abi
 import web3._utils.abi
 import web3._utils.events
 
-import forta_toolkit.parsing.common
+import toolblocks.parsing.common
 import ioseeth.parsing.abi
 
 # CONSTANTS ###################################################################
@@ -39,12 +39,12 @@ def _get_input_names(abi: dict) -> tuple:
 
 def _parse_log_topics(log: dict) -> list:
     """Normalize the log topics."""
-    return forta_toolkit.parsing.common.get_field(dataset=log, keys=('topics',), default=(b'',), callback=lambda __l: [forta_toolkit.parsing.common.to_bytes(__t) for __t in __l])
+    return toolblocks.parsing.common.get_field(dataset=log, keys=('topics',), default=(b'',), callback=lambda __l: [toolblocks.parsing.common.to_bytes(__t) for __t in __l])
 
 def _get_log_topics_hash(log: dict) -> str:
     """Return the hash of the topics, even when empty."""
     __topics = _parse_log_topics(log=log)
-    return forta_toolkit.parsing.common.to_hexstr(__topics[0] if __topics else ioseeth.utils.keccak(text=''))
+    return toolblocks.parsing.common.to_hexstr(__topics[0] if __topics else ioseeth.utils.keccak(text=''))
 
 def _compare_abi_to_log(abi: dict, log: dict) -> bool:
     """Returns True if the abi and log match, False otherwise."""

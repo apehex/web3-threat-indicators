@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.1.21
+
+### Changes
+
+- upgrade `toolblocks` to `0.5.0`: change import statements to match the new name
+- change various default arguments
+
 ## v0.1.20
 
 ### Fixes

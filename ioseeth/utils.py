@@ -6,7 +6,7 @@ import typing
 
 import eth_utils.crypto
 
-import forta_toolkit.parsing.common
+import toolblocks.parsing.common
 
 # DATA ########################################################################
 
@@ -28,4 +28,4 @@ def coverage(left: collections.abc.Iterable, right: collections.abc.Iterable) ->
 
 def keccak(primitive: typing.Union[bytes, int, bool]=None, hexstr: str=None, text: str=None) -> str:
     """Compute the Keccak 256 hash of any data, encoded as a HEX string."""
-    return forta_toolkit.parsing.common.to_hexstr(eth_utils.crypto.keccak(primitive=primitive, hexstr=hexstr, text=text)) # lowercase, without prefix
+    return toolblocks.parsing.common.to_hexstr(eth_utils.crypto.keccak(primitive=primitive, hexstr=hexstr, text=text), prefix=False) # lowercase, without prefix

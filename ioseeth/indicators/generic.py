@@ -27,7 +27,7 @@ def bytecode_has_delegatecall(bytecode: str) -> bool:
 
 # INTERFACES ##################################################################
 
-def bytecode_has_specific_interface(bytecode: str, abi: tuple, threshold: float=0.8, raw: bool=False) -> bool:
+def bytecode_has_specific_interface(bytecode: str, abi: tuple, threshold: float=0.8, raw: bool=True) -> bool:
     """Check if the input bytecode implements a given ABI interface."""
     __selectors = ioseeth.parsing.bytecode.get_function_selectors(bytecode=bytecode, raw=raw)
     __interface = tuple(ioseeth.parsing.abi.map_selectors_to_signatures(abi=abi, target='function').keys())
