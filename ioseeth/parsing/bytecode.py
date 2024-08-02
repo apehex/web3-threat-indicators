@@ -17,7 +17,7 @@ BLOCKHASH = 0x40
 COINBASE = 0x41
 PREVRANDAO = 0x44
 JUMPDEST = 0x5B
-PUSH1 = 0x60
+PUSH0 = 0x5F
 PUSH32 = 0x7F
 CREATE = 0xF0
 CALLCODE = 0xF2
@@ -31,7 +31,7 @@ SELFDESTRUCT = 0xFF
 HALTING = [STOP, RETURN, REVERT, INVALID, SELFDESTRUCT]
 
 is_halting = lambda opcode: opcode in HALTING
-is_push = lambda opcode: opcode >= PUSH1 and opcode <= PUSH32
+is_push = lambda opcode: opcode >= PUSH0 and opcode <= PUSH32
 
 # REGEX #######################################################################
 
@@ -104,14 +104,15 @@ def parse_creation_data(data: str) -> tuple:
 
 # INSTRUCTIONS ################################################################
 
+def instruction_length(opcode: int) -> int:
+    return 1 + is_push(opcode) * (opcode - PUSH0) # 1 byte for the opcode + n bytes of data
+
 def iterate_over_instructions(bytecode: str) -> iter:
     """Split the bytecode into raw instructions and returns an iterator."""
     __bytes = toolblocks.parsing.common.to_bytes(bytecode)
     __i = 0
     while __i < len(__bytes):
-        __len = 1 # instruction length in bytes
-        if is_push(__bytes[__i]): # instruction = push opcode + data
-            __len = __bytes[__i] - PUSH1 + 2
+        __len = instruction_length(opcode=__bytes[__i])
         yield __bytes[__i:__i+__len]
         __i = __i + __len
 
